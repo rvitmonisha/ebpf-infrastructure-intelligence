@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
-#include <time.h>
 #include <bpf/libbpf.h>
 
 #include "process_monitor.skel.h"
@@ -26,15 +25,19 @@ static int handle_event(void *ctx, void *data, size_t data_sz)
 {
     const struct process_event *event = data;
 
-    double timestamp_sec = event->timestamp_ns / 1000000000.0;
+    double timestamp_sec =
+        event->timestamp_ns / 1000000000.0;
 
     printf(
-        "Process executed | PID: %u | UID: %u | Time: %.3f sec | Command: %s\n",
+        "Process executed | PID: %u | UID: %u | "
+        "Time: %.3f sec | Command: %s\n",
         event->pid,
         event->uid,
         timestamp_sec,
         event->comm
     );
+
+    fflush(stdout);
 
     return 0;
 }
@@ -79,12 +82,17 @@ int main(void)
     printf("eBPF process monitor started.\n");
     printf("Monitoring process execution events...\n");
     printf("Press Ctrl+C to stop.\n\n");
+    fflush(stdout);
 
     while (!exiting) {
         err = ring_buffer__poll(rb, 100);
 
         if (err < 0 && err != -EINTR) {
-            fprintf(stderr, "Ring buffer polling failed: %d\n", err);
+            fprintf(
+                stderr,
+                "Ring buffer polling failed: %d\n",
+                err
+            );
             break;
         }
     }
@@ -92,7 +100,8 @@ int main(void)
     ring_buffer__free(rb);
     process_monitor_bpf__destroy(skel);
 
-    printf("\nMonitor stopped.\n");
+    printf("\nProcess monitor stopped.\n");
+    fflush(stdout);
 
     return 0;
 }
