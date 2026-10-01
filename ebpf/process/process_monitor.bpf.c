@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
@@ -8,6 +9,8 @@ char LICENSE[] SEC("license") = "GPL";
 struct process_event {
     __u32 pid;
     __u32 ppid;
+    __u32 uid;
+    __u64 timestamp_ns;
     char comm[16];
 };
 
@@ -28,9 +31,12 @@ int trace_process_exec(struct trace_event_raw_sched_process_exec *ctx)
     __u64 pid_tgid = bpf_get_current_pid_tgid();
 
     event->pid = pid_tgid >> 32;
+    event->uid = (__u32)bpf_get_current_uid_gid();
+    event->timestamp_ns = bpf_ktime_get_ns();
+
     event->ppid = 0;
 
-    bpf_get_current_comm(&event->comm, sizeof(event->comm));
+    bpf_get_current_comm(event->comm, sizeof(event->comm));
 
     bpf_ringbuf_submit(event, 0);
 

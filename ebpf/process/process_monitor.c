@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <time.h>
 #include <bpf/libbpf.h>
 
 #include "process_monitor.skel.h"
@@ -11,6 +12,8 @@ static volatile sig_atomic_t exiting = 0;
 struct process_event {
     unsigned int pid;
     unsigned int ppid;
+    unsigned int uid;
+    unsigned long long timestamp_ns;
     char comm[16];
 };
 
@@ -23,9 +26,15 @@ static int handle_event(void *ctx, void *data, size_t data_sz)
 {
     const struct process_event *event = data;
 
-    printf("Process executed | PID: %u | Command: %s\n",
-           event->pid,
-           event->comm);
+    double timestamp_sec = event->timestamp_ns / 1000000000.0;
+
+    printf(
+        "Process executed | PID: %u | UID: %u | Time: %.3f sec | Command: %s\n",
+        event->pid,
+        event->uid,
+        timestamp_sec,
+        event->comm
+    );
 
     return 0;
 }
@@ -40,12 +49,14 @@ int main(void)
     signal(SIGTERM, sig_handler);
 
     skel = process_monitor_bpf__open_and_load();
+
     if (!skel) {
         fprintf(stderr, "Failed to open and load BPF skeleton\n");
         return 1;
     }
 
     err = process_monitor_bpf__attach(skel);
+
     if (err) {
         fprintf(stderr, "Failed to attach BPF program: %d\n", err);
         process_monitor_bpf__destroy(skel);
@@ -71,6 +82,7 @@ int main(void)
 
     while (!exiting) {
         err = ring_buffer__poll(rb, 100);
+
         if (err < 0 && err != -EINTR) {
             fprintf(stderr, "Ring buffer polling failed: %d\n", err);
             break;
