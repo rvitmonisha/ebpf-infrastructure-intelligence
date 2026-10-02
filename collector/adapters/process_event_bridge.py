@@ -18,7 +18,6 @@ class ProcessEventBridge:
         processed_events = 0
 
         for line in self.adapter.stream_events():
-
             event = self.parser.parse_process_output(line)
 
             if event is None:

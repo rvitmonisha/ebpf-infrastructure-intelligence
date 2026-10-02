@@ -4,48 +4,54 @@ from collector.ingestion.ingestion import EventIngestion
 
 
 def main():
-    print("Event ingestion + correlation test started.")
+    print("Event ingestion + incident test started.")
 
     pipeline = EventPipeline()
     collector = EventCollector(pipeline)
     ingestion = EventIngestion(collector)
 
-    pid = 9001
-
     ingestion.ingest_process(
-        pid=pid,
-        uid=1000,
-        timestamp_ns=7000000000,
-        process_name="bash",
+        9001,
+        1000,
+        7000000000,
+        "bash",
     )
 
     ingestion.ingest_syscall(
-        pid=pid,
-        uid=1000,
-        timestamp_ns=7001000000,
-        process_name="bash",
+        9001,
+        1000,
+        7001000000,
+        "bash",
     )
 
     ingestion.ingest_network(
-        pid=pid,
-        uid=1000,
-        timestamp_ns=7002000000,
-        process_name="curl",
+        9001,
+        1000,
+        7002000000,
+        "bash",
     )
 
-    print(f"Events ingested: {ingestion.collector.get_event_count()}")
+    print(f"Events ingested: {collector.get_event_count()}")
 
-    correlated_events = (
-        ingestion.correlation_service.get_events_for_process(pid)
-    )
+    process_count = ingestion.correlation_service.get_process_count()
 
-    print(f"Processes tracked: {ingestion.correlation_service.get_process_count()}")
-    print(f"Events correlated for PID {pid}: {len(correlated_events)}")
+    print(f"Processes tracked: {process_count}")
 
-    for event in correlated_events:
-        print(event.to_dict())
+    incident = ingestion.incident_service.build_incident(9001)
 
-    print("Event ingestion + correlation test completed successfully.")
+    if incident is None:
+        print("Failed to build incident.")
+        return
+
+    print("Incident created:")
+    print(incident.to_dict())
+
+    assert collector.get_event_count() == 3
+    assert process_count == 1
+    assert incident.pid == 9001
+    assert incident.event_count() == 3
+
+    print("Event ingestion + incident test completed successfully.")
 
 
 if __name__ == "__main__":
