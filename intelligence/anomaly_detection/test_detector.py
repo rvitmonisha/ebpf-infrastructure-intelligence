@@ -3,28 +3,32 @@ from intelligence.anomaly_detection.detector import AnomalyDetector
 
 
 def main():
-    detector = AnomalyDetector(threshold=3)
-
     print("Anomaly detector test started.")
 
-    for i in range(5):
+    detector = AnomalyDetector(
+        threshold=3,
+        window_seconds=10,
+    )
+
+    for i in range(4):
         event = Event(
             event_type=EventType.SYSCALL,
-            pid=5001,
+            pid=9000 + i,
             uid=1000,
-            timestamp_ns=4000000000 + i,
+            timestamp_ns=1_000_000_000 + (i * 1_000_000_000),
             process_name="test-process",
         )
 
         alert = detector.analyze_event(event)
 
-        print(f"Event {i + 1}:")
-        print(f"Alert: {alert}")
+        print(f"Event {i + 1}: {alert}")
 
-    print("Event counts:")
-    print(detector.get_event_counts())
+    assert alert is not None
+    assert alert["type"] == "EVENT_FREQUENCY_ANOMALY"
+    assert alert["window_seconds"] == 10
+    assert alert["count"] == 4
 
-    print("Anomaly detector test completed successfully.")
+    print("Time-window anomaly detection test completed successfully.")
 
 
 if __name__ == "__main__":

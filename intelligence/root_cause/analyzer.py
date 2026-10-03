@@ -10,7 +10,18 @@ class RootCauseAnalyzer:
 
         findings = []
 
-        if security_alerts:
+        high_security_alerts = [
+            alert
+            for alert in security_alerts
+            if alert.get("severity") == "HIGH"
+        ]
+
+        if high_security_alerts:
+            findings.append(
+                "High-severity suspicious process activity detected."
+            )
+
+        elif security_alerts:
             findings.append(
                 "Security-related activity detected."
             )

@@ -3,36 +3,42 @@ from security.detection_engine.detector import SecurityDetector
 
 
 def main():
+    print("Security detector test started.")
+
     detector = SecurityDetector()
 
-    syscall_event = Event(
-        event_type=EventType.SYSCALL,
-        pid=4001,
+    suspicious_event = Event(
+        event_type=EventType.PROCESS,
+        pid=9100,
         uid=1000,
-        timestamp_ns=3000000000,
+        timestamp_ns=1_000_000_000,
+        process_name="nc",
+    )
+
+    alert = detector.analyze_event(suspicious_event)
+
+    print("Suspicious process result:")
+    print(alert)
+
+    assert alert is not None
+    assert alert["type"] == "SUSPICIOUS_PROCESS"
+    assert alert["severity"] == "HIGH"
+    assert alert["process_name"] == "nc"
+
+    normal_event = Event(
+        event_type=EventType.PROCESS,
+        pid=9101,
+        uid=1000,
+        timestamp_ns=2_000_000_000,
         process_name="bash",
     )
 
-    network_event = Event(
-        event_type=EventType.NETWORK,
-        pid=4001,
-        uid=1000,
-        timestamp_ns=3001000000,
-        process_name="curl",
-    )
+    normal_alert = detector.analyze_event(normal_event)
 
-    print("Security detector test started.")
+    print("Normal process result:")
+    print(normal_alert)
 
-    syscall_alert = detector.analyze_event(syscall_event)
-    network_alert = detector.analyze_event(network_event)
-
-    print("Syscall alert:")
-    print(syscall_alert)
-
-    print("Network alert:")
-    print(network_alert)
-
-    print(f"Total alerts: {len(detector.get_alerts())}")
+    assert normal_alert is None
 
     print("Security detector test completed successfully.")
 

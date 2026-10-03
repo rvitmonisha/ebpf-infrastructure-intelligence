@@ -2,46 +2,45 @@ from intelligence.decision_engine.engine import DecisionEngine
 
 
 def main():
-    engine = DecisionEngine()
-
     print("Decision engine test started.")
 
-    security_case = {
-        "incident_id": "INC-7001",
-        "pid": 7001,
-        "process_name": "suspicious-process",
-        "findings": [
-            "Security-related activity detected.",
-        ],
-        "event_count": 5,
-    }
+    engine = DecisionEngine()
 
-    anomaly_case = {
-        "incident_id": "INC-7002",
-        "pid": 7002,
-        "process_name": "busy-process",
+    high_security_result = {
+        "incident_id": "INC-9100",
+        "pid": 9100,
+        "process_name": "nc",
         "findings": [
+            "High-severity suspicious process activity detected.",
             "Abnormally high event frequency detected.",
         ],
-        "event_count": 10,
+        "event_count": 6,
     }
 
-    normal_case = {
-        "incident_id": "INC-7003",
-        "pid": 7003,
-        "process_name": "normal-process",
-        "findings": [],
-        "event_count": 2,
+    decision = engine.decide(high_security_result)
+
+    print("High-security decision:")
+    print(decision)
+
+    assert decision["action"] == "RECOMMEND"
+    assert "High-severity" in decision["reason"]
+
+    normal_result = {
+        "incident_id": "INC-9101",
+        "pid": 9101,
+        "process_name": "bash",
+        "findings": [
+            "No significant root-cause indicators detected."
+        ],
+        "event_count": 1,
     }
 
-    print("Security case:")
-    print(engine.decide(security_case))
+    normal_decision = engine.decide(normal_result)
 
-    print("Anomaly case:")
-    print(engine.decide(anomaly_case))
+    print("Normal decision:")
+    print(normal_decision)
 
-    print("Normal case:")
-    print(engine.decide(normal_case))
+    assert normal_decision["action"] == "MONITOR"
 
     print("Decision engine test completed successfully.")
 

@@ -1,19 +1,32 @@
-from collections import Counter
+from collections import defaultdict, deque
 
 from collector.event_pipeline.event_schema import Event
 
 
 class AnomalyDetector:
-    def __init__(self, threshold: int = 5):
+    def __init__(
+        self,
+        threshold: int = 5,
+        window_seconds: int = 10,
+    ):
         self.threshold = threshold
-        self.event_counts = Counter()
+        self.window_seconds = window_seconds
+
+        self.event_times = defaultdict(deque)
 
     def analyze_event(self, event: Event):
         event_type = event.event_type.value
+        current_time = event.timestamp_ns / 1_000_000_000
 
-        self.event_counts[event_type] += 1
+        timestamps = self.event_times[event_type]
+        timestamps.append(current_time)
 
-        count = self.event_counts[event_type]
+        cutoff_time = current_time - self.window_seconds
+
+        while timestamps and timestamps[0] < cutoff_time:
+            timestamps.popleft()
+
+        count = len(timestamps)
 
         if count > self.threshold:
             return {
@@ -23,13 +36,18 @@ class AnomalyDetector:
                 "pid": event.pid,
                 "process_name": event.process_name,
                 "count": count,
+                "window_seconds": self.window_seconds,
                 "message": (
                     f"Unusually high frequency of {event_type} "
-                    "events detected."
+                    f"events detected within "
+                    f"{self.window_seconds} seconds."
                 ),
             }
 
         return None
 
     def get_event_counts(self):
-        return dict(self.event_counts)
+        return {
+            event_type: len(timestamps)
+            for event_type, timestamps in self.event_times.items()
+        }

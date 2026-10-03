@@ -8,16 +8,37 @@ class DecisionEngine:
                 "reason": "No findings detected.",
             }
 
+        high_security_finding = (
+            "High-severity suspicious process activity detected."
+        )
+
+        anomaly_finding = (
+            "Abnormally high event frequency detected."
+        )
+
+        if high_security_finding in findings:
+            return {
+                "action": "RECOMMEND",
+                "reason": (
+                    "High-severity suspicious process activity "
+                    "requires investigation."
+                ),
+            }
+
+        if anomaly_finding in findings:
+            return {
+                "action": "RECOMMEND",
+                "reason": (
+                    "High event frequency requires investigation."
+                ),
+            }
+
         if "Security-related activity detected." in findings:
             return {
                 "action": "RECOMMEND",
-                "reason": "Security-related activity requires investigation.",
-            }
-
-        if "Abnormally high event frequency detected." in findings:
-            return {
-                "action": "RECOMMEND",
-                "reason": "High event frequency requires investigation.",
+                "reason": (
+                    "Security-related activity requires investigation."
+                ),
             }
 
         return {

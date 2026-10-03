@@ -2,28 +2,43 @@ from intelligence.recommendation_engine.engine import RecommendationEngine
 
 
 def main():
-    engine = RecommendationEngine()
-
     print("Recommendation engine test started.")
 
-    recommend_case = {
+    engine = RecommendationEngine()
+
+    high_security_decision = {
         "action": "RECOMMEND",
-        "reason": "Security-related activity requires investigation.",
+        "reason": (
+            "High-severity suspicious process activity "
+            "requires investigation."
+        ),
     }
 
-    monitor_case = {
-        "action": "MONITOR",
-        "reason": "No findings detected.",
-    }
+    recommendation = engine.recommend(
+        high_security_decision
+    )
 
-    recommendation = engine.recommend(recommend_case)
-    monitoring = engine.recommend(monitor_case)
-
-    print("Recommendation case:")
+    print("High-security recommendation:")
     print(recommendation)
 
-    print("Monitoring case:")
-    print(monitoring)
+    assert recommendation["safe_to_automate"] is False
+    assert "Immediately investigate" in recommendation["recommendation"]
+
+    normal_decision = {
+        "action": "MONITOR",
+        "reason": "No remediation action required.",
+    }
+
+    normal_recommendation = engine.recommend(
+        normal_decision
+    )
+
+    print("Normal recommendation:")
+    print(normal_recommendation)
+
+    assert normal_recommendation["recommendation"] == (
+        "Continue monitoring."
+    )
 
     print("Recommendation engine test completed successfully.")
 

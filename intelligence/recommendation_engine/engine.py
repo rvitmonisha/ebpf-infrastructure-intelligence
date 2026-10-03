@@ -4,8 +4,20 @@ class RecommendationEngine:
         reason = decision.get("reason", "")
 
         if action == "RECOMMEND":
+            if "High-severity" in reason:
+                return {
+                    "recommendation": (
+                        "Immediately investigate the suspicious "
+                        "process and review its recent activity."
+                    ),
+                    "reason": reason,
+                    "safe_to_automate": False,
+                }
+
             return {
-                "recommendation": "Investigate the affected process.",
+                "recommendation": (
+                    "Investigate the affected process."
+                ),
                 "reason": reason,
                 "safe_to_automate": False,
             }

@@ -1,44 +1,34 @@
 from collector.event_pipeline.event_schema import Event, EventType
-from correlation.incident_builder.builder import IncidentBuilder
+from correlation.incident_builder.incident import Incident
 from intelligence.root_cause.analyzer import RootCauseAnalyzer
 
 
 def main():
-    builder = IncidentBuilder()
-    analyzer = RootCauseAnalyzer()
+    print("Root-cause analyzer test started.")
 
-    pid = 6001
+    incident = Incident(
+        incident_id="INC-9100",
+        pid=9100,
+        process_name="nc",
+    )
 
-    events = [
-        Event(
-            event_type=EventType.PROCESS,
-            pid=pid,
-            uid=1000,
-            timestamp_ns=5000000000,
-            process_name="suspicious-process",
-        ),
-        Event(
-            event_type=EventType.SYSCALL,
-            pid=pid,
-            uid=1000,
-            timestamp_ns=5001000000,
-            process_name="suspicious-process",
-        ),
-        Event(
-            event_type=EventType.NETWORK,
-            pid=pid,
-            uid=1000,
-            timestamp_ns=5002000000,
-            process_name="suspicious-process",
-        ),
-    ]
+    event = Event(
+        event_type=EventType.PROCESS,
+        pid=9100,
+        uid=1000,
+        timestamp_ns=1_000_000_000,
+        process_name="nc",
+    )
 
-    incident = builder.build_from_events(pid, events)
+    incident.add_event(event)
 
     security_alerts = [
         {
-            "type": "SYSCALL_ACTIVITY",
-            "severity": "LOW",
+            "type": "SUSPICIOUS_PROCESS",
+            "severity": "HIGH",
+            "pid": 9100,
+            "process_name": "nc",
+            "message": "Suspicious process detected.",
         }
     ]
 
@@ -46,18 +36,39 @@ def main():
         {
             "type": "EVENT_FREQUENCY_ANOMALY",
             "severity": "MEDIUM",
+            "event_type": "syscall",
+            "pid": 9100,
+            "process_name": "nc",
+            "count": 6,
+            "window_seconds": 10,
         }
     ]
 
+    analyzer = RootCauseAnalyzer()
+
     result = analyzer.analyze(
         incident,
-        security_alerts,
-        anomaly_alerts,
+        security_alerts=security_alerts,
+        anomaly_alerts=anomaly_alerts,
     )
 
-    print("Root-cause analyzer test started.")
-    print("Analysis result:")
+    print("Root-cause result:")
     print(result)
+
+    assert result["incident_id"] == "INC-9100"
+    assert result["pid"] == 9100
+    assert result["event_count"] == 1
+
+    assert (
+        "High-severity suspicious process activity detected."
+        in result["findings"]
+    )
+
+    assert (
+        "Abnormally high event frequency detected."
+        in result["findings"]
+    )
+
     print("Root-cause analyzer test completed successfully.")
 
 
