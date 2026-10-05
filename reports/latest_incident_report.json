@@ -1,0 +1,334 @@
+{
+  "generated_at": "2026-10-05T03:58:26.777440+00:00",
+  "summary": {
+    "total_events": 10,
+    "unique_processes": 10,
+    "total_alerts": 0,
+    "high_severity_alerts": 0
+  },
+  "events": [
+    {
+      "event_type": "process",
+      "pid": 5988,
+      "uid": 0,
+      "timestamp_ns": 15157005000000,
+      "process_name": "ip6tables"
+    },
+    {
+      "event_type": "process",
+      "pid": 5989,
+      "uid": 0,
+      "timestamp_ns": 15157006000000,
+      "process_name": "iptables"
+    },
+    {
+      "event_type": "process",
+      "pid": 5990,
+      "uid": 0,
+      "timestamp_ns": 15157830000000,
+      "process_name": "bridge"
+    },
+    {
+      "event_type": "process",
+      "pid": 5996,
+      "uid": 0,
+      "timestamp_ns": 15157844000000,
+      "process_name": "portmap"
+    },
+    {
+      "event_type": "process",
+      "pid": 6005,
+      "uid": 0,
+      "timestamp_ns": 15162855000000,
+      "process_name": "bridge"
+    },
+    {
+      "event_type": "process",
+      "pid": 6011,
+      "uid": 0,
+      "timestamp_ns": 15162864000000,
+      "process_name": "portmap"
+    },
+    {
+      "event_type": "process",
+      "pid": 6019,
+      "uid": 0,
+      "timestamp_ns": 15167875000000,
+      "process_name": "bridge"
+    },
+    {
+      "event_type": "process",
+      "pid": 6025,
+      "uid": 0,
+      "timestamp_ns": 15167895000000,
+      "process_name": "portmap"
+    },
+    {
+      "event_type": "process",
+      "pid": 6032,
+      "uid": 0,
+      "timestamp_ns": 15171761000000,
+      "process_name": "runc"
+    },
+    {
+      "event_type": "process",
+      "pid": 6038,
+      "uid": 0,
+      "timestamp_ns": 15171795000000,
+      "process_name": "docker-init"
+    }
+  ],
+  "alerts": [],
+  "incident_analyses": [
+    {
+      "incident_id": "INC-5988",
+      "pid": 5988,
+      "process_name": "ip6tables",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-5988",
+          "pid": 5988,
+          "process_name": "ip6tables",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-5989",
+      "pid": 5989,
+      "process_name": "iptables",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-5989",
+          "pid": 5989,
+          "process_name": "iptables",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-5990",
+      "pid": 5990,
+      "process_name": "bridge",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-5990",
+          "pid": 5990,
+          "process_name": "bridge",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-5996",
+      "pid": 5996,
+      "process_name": "portmap",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-5996",
+          "pid": 5996,
+          "process_name": "portmap",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-6005",
+      "pid": 6005,
+      "process_name": "bridge",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-6005",
+          "pid": 6005,
+          "process_name": "bridge",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-6011",
+      "pid": 6011,
+      "process_name": "portmap",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-6011",
+          "pid": 6011,
+          "process_name": "portmap",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-6019",
+      "pid": 6019,
+      "process_name": "bridge",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-6019",
+          "pid": 6019,
+          "process_name": "bridge",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-6025",
+      "pid": 6025,
+      "process_name": "portmap",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-6025",
+          "pid": 6025,
+          "process_name": "portmap",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-6032",
+      "pid": 6032,
+      "process_name": "runc",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-6032",
+          "pid": 6032,
+          "process_name": "runc",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    },
+    {
+      "incident_id": "INC-6038",
+      "pid": 6038,
+      "process_name": "docker-init",
+      "result": {
+        "analysis": {
+          "incident_id": "INC-6038",
+          "pid": 6038,
+          "process_name": "docker-init",
+          "findings": [
+            "No significant root-cause indicators detected."
+          ],
+          "event_count": 1
+        },
+        "decision": {
+          "action": "MONITOR",
+          "reason": "No remediation action required."
+        },
+        "recommendation": {
+          "recommendation": "Continue monitoring.",
+          "reason": "No remediation action required.",
+          "safe_to_automate": false
+        }
+      }
+    }
+  ]
+}
