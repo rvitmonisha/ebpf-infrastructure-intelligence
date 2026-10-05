@@ -1,581 +1,203 @@
-# eBPF-Based Intelligent Cloud Infrastructure Observability, Security & Auto-Remediation Platform
+# eBPF-Based Intelligent Infrastructure Observability & Security Platform
 
-An intelligent infrastructure monitoring platform that uses **eBPF, Linux kernel observability, Kubernetes, event correlation, anomaly detection, root-cause analysis, and controlled auto-remediation** to detect and respond to infrastructure-level problems.
+[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
+[![C](https://img.shields.io/badge/C-eBPF%20Program-blue?logo=c)](https://en.wikipedia.org/wiki/C_(programming_language))
+[![eBPF](https://img.shields.io/badge/eBPF-Kernel%20Observability-orange)](https://ebpf.io/)
+[![Linux](https://img.shields.io/badge/Linux-Ubuntu-black?logo=linux)](https://www.linux.org/)
+[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Deployed-326CE5?logo=kubernetes)](https://kubernetes.io/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-Dashboard-F46800?logo=grafana)](https://grafana.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/rvitmonisha/ebpf-infrastructure-intelligence)
 
----
+An intelligent infrastructure observability and security platform that uses **eBPF to collect Linux kernel-level telemetry** and combines it with event processing, security detection, anomaly detection, incident intelligence, Prometheus, Grafana, and Kubernetes.
 
 ## Overview
 
-Modern cloud-native applications run across multiple layers including applications, containers, Kubernetes workloads, Linux processes, networking, and the operating system kernel.
+Modern cloud infrastructure requires visibility below the application and container level. This project provides low-level Linux process observability using eBPF and transforms kernel events into actionable infrastructure and security intelligence.
 
-Traditional monitoring tools often provide metrics and logs but may not provide enough visibility into low-level system behavior.
+### Key capabilities
 
-This project uses **eBPF (Extended Berkeley Packet Filter)** to observe Linux kernel events with low overhead and combines those events with Kubernetes and infrastructure telemetry.
+- Real-time eBPF process execution monitoring
+- Kernel-to-userspace event collection using libbpf ring buffers
+- Structured event parsing and processing
+- Process-level event correlation
+- Security detection for suspicious activity
+- Behavioral detection for repeated process execution
+- Per-process anomaly detection using configurable time windows
+- Incident construction and intelligence analysis
+- Actionable incident recommendations
+- JSON incident reporting
+- Prometheus metrics and Grafana visualization
+- Kubernetes-based deployment
 
-The platform is designed to:
-
-* Monitor Linux kernel and process activity
-* Observe network and system-level events
-* Correlate events across infrastructure layers
-* Detect abnormal behavior
-* Identify probable root causes
-* Generate actionable recommendations
-* Perform controlled and policy-based remediation
-* Provide centralized infrastructure visibility through dashboards
-
----
-
-## Objectives
-
-The primary objectives of the project are:
-
-1. Build kernel-level observability using eBPF.
-2. Monitor process, system-call, network, and file-system activity.
-3. Correlate low-level events with Kubernetes workloads.
-4. Detect infrastructure and security anomalies.
-5. Build a root-cause analysis engine.
-6. Generate remediation recommendations.
-7. Support controlled automated remediation.
-8. Provide centralized monitoring through Prometheus and Grafana.
-9. Support multi-node Kubernetes environments.
-10. Provide incident timelines and replay capabilities.
-
----
-
-## System Architecture
+## Architecture
 
 ```text
-                         CLOUD / KUBERNETES CLUSTER
-                                  │
-             ┌────────────────────┼────────────────────┐
-             │                    │                    │
-           Node 1               Node 2               Node 3
-             │                    │                    │
-             └────────────────────┼────────────────────┘
-                                  │
-                                  ▼
-                           ┌─────────────┐
-                           │    eBPF     │
-                           │  Collector  │
-                           └──────┬──────┘
-                                  │
-                ┌─────────────────┼─────────────────┐
-                │                 │                 │
-                ▼                 ▼                 ▼
-          Process Events     Network Events    File/Syscall
-                                                   Events
-                │                 │                 │
-                └─────────────────┼─────────────────┘
-                                  ▼
-                         EVENT CORRELATION
-                                  │
-                 ┌────────────────┼────────────────┐
-                 │                │                │
-                 ▼                ▼                ▼
-            Performance       Security          Network
-             Analyzer          Engine           Analyzer
-                 │                │                │
-                 └────────────────┼────────────────┘
-                                  ▼
-                         ANOMALY DETECTION
-                                  │
-                                  ▼
-                         ROOT-CAUSE ENGINE
-                                  │
-                                  ▼
-                         DECISION ENGINE
-                                  │
-                    ┌─────────────┴─────────────┐
-                    ▼                           ▼
-             Recommendation             Auto-Remediation
-                    │                           │
-                    └─────────────┬─────────────┘
-                                  ▼
-                         Kubernetes / Cloud
-                                  │
-                                  ▼
-                       Prometheus + Grafana
-                                  │
-                                  ▼
-                            Web Dashboard
+Linux Kernel
+     │
+     ▼
+┌───────────────┐
+│ eBPF Program  │
+└───────┬───────┘
+        │ Ring Buffer
+        ▼
+┌────────────────────┐
+│ Userspace Collector│
+└─────────┬──────────┘
+          ▼
+┌────────────────────┐
+│       Event        |
+|  Parser/Pipeline   │
+└─────────┬──────────┘
+          │
+     ┌────┼───────────────┐
+     ▼    ▼               ▼
+ Security Anomaly     Incident
+ Detection Detection  Correlation
+     │    │               │
+     └────┼───────────────┘
+          ▼
+┌────────────────────┐
+|     Incident       |
+|  Intelligence      │
+└─────────┬──────────┘
+          │
+     ┌────┴─────┐
+     ▼          ▼
+  Reports   Recommendations
+     │
+     ▼
+┌───────────────┐
+│ Prometheus    │
+└───────┬───────┘
+        ▼
+┌───────────────┐
+│ Grafana       │
+└───────────────┘
 ```
-
----
-
-## Core Features
-
-### 1. eBPF Kernel Observability
-
-The platform collects low-level Linux events using eBPF.
-
-Planned event sources include:
-
-* Process execution
-* Process creation and termination
-* System calls
-* Network activity
-* TCP events
-* File-system activity
-* Scheduler activity
-* Resource behavior
-
----
-
-### 2. Event Correlation
-
-Events from different infrastructure layers are correlated to identify relationships between system behavior and application performance.
-
-Example:
-
-```text
-Kubernetes Pod
-      ↓
-Container
-      ↓
-Process
-      ↓
-Network Connection
-      ↓
-Network Retransmissions
-      ↓
-Application Latency
-      ↓
-Service Degradation
-```
-
----
-
-### 3. Anomaly Detection
-
-The platform will establish workload-specific baselines and identify unusual behavior.
-
-Planned techniques include:
-
-* Statistical thresholds
-* Moving averages
-* Z-score based detection
-* Isolation Forest
-* Time-series analysis
-
-The system will focus on explainable infrastructure anomalies rather than using machine learning unnecessarily.
-
----
-
-### 4. Security Monitoring
-
-The security engine will identify suspicious infrastructure behavior such as:
-
-* Unexpected process execution
-* Unusual network connections
-* Unexpected file activity
-* Suspicious container behavior
-* Abnormal system-call patterns
-
-Detected events will be converted into security incidents with supporting evidence.
-
----
-
-### 5. Root-Cause Analysis
-
-The root-cause engine will correlate events and identify the most relevant contributing events.
-
-Example:
-
-```text
-CPU Spike
-   ↓
-Process Activity Increased
-   ↓
-Container Resource Usage Increased
-   ↓
-Pod Performance Degraded
-   ↓
-Application Latency Increased
-```
-
-The system will provide a probable cause together with supporting events and confidence information.
-
----
-
-### 6. Controlled Auto-Remediation
-
-The platform will support policy-based remediation.
-
-Examples:
-
-* Restart a non-critical test workload
-* Restart a failed Kubernetes pod
-* Apply predefined Kubernetes actions
-* Generate remediation recommendations
-
-Automated actions will be restricted to explicitly defined and safe policies.
-
----
-
-### 7. Infrastructure Dashboard
-
-The dashboard will provide views for:
-
-* Infrastructure overview
-* Node health
-* Kubernetes workloads
-* Process activity
-* Network activity
-* Security events
-* Detected anomalies
-* Incidents
-* Root-cause analysis
-* Remediation actions
-* Incident timeline and replay
-
----
 
 ## Technology Stack
 
-| Category                | Technology            |
-| ----------------------- | --------------------- |
-| Operating System        | Linux                 |
-| Kernel Observability    | eBPF                  |
-| eBPF Language           | C                     |
-| eBPF Framework          | libbpf                |
-| eBPF Portability        | CO-RE                 |
-| Kernel Type Information | BTF                   |
-| Backend                 | Python / FastAPI      |
-| Monitoring              | Prometheus            |
-| Visualization           | Grafana               |
-| Containers              | Docker                |
-| Orchestration           | Kubernetes            |
-| Anomaly Detection       | Python / Scikit-learn |
-| Version Control         | Git / GitHub          |
-| Development             | VS Code / Linux Shell |
-
----
+| Category | Technologies |
+|---|---|
+| Kernel observability | eBPF, libbpf, Linux |
+| eBPF development | C, Clang/LLVM, BTF, CO-RE |
+| Application logic | Python |
+| Containerization | Docker |
+| Orchestration | Kubernetes |
+| Monitoring | Prometheus |
+| Visualization | Grafana |
+| Node metrics | Node Exporter |
+| Development | WSL2 Ubuntu, Git, GitHub |
 
 ## Project Structure
 
 ```text
 ebpf-infrastructure-intelligence/
-│
 ├── ebpf/
-│   ├── vmlinux.h
-│   │
-│   ├── process/
-│   │   ├── process_monitor.bpf.c
-│   │   ├── process_monitor.bpf.o
-│   │   ├── process_monitor.skel.h
-│   │   ├── process_monitor.c
-│   │   └── process_monitor
-│   │
-│   ├── syscall/
-│   ├── network/
-│   ├── filesystem/
-│   └── scheduler/
-│
+│   └── process/              # eBPF programs and userspace loader
 ├── collector/
-│   ├── event_pipeline/
-│   ├── parsers/
-│   └── exporters/
-│
+│   ├── adapters/             # Event collection
+│   ├── parsers/              # eBPF output parsing
+│   └── event_pipeline/       # Event schema and pipeline
+├── security/
+│   └── detection_engine/     # Security detection
+├── intelligence/
+│   └── anomaly_detection/    # Behavioral anomaly detection
 ├── correlation/
-│   ├── event_correlator/
-│   ├── dependency_graph/
-│   └── incident_builder/
-│
-├── analytics/
-│   ├── performance/
-│   ├── network/
-│   ├── security/
-│   └── anomaly_detection/
-│
-├── root_cause/
-│   ├── rules/
-│   └── analyzer/
-│
-├── remediation/
-│   ├── policies/
-│   ├── recommendations/
-│   └── kubernetes_actions/
-│
-├── backend/
-│   ├── api/
-│   ├── models/
-│   ├── services/
-│   └── main.py
-│
-├── kubernetes/
-│   ├── daemonset/
-│   ├── deployment/
-│   ├── services/
-│   └── monitoring/
-│
-├── dashboard/
-│
-├── tests/
-├── benchmarks/
-├── docs/
-├── scripts/
-│
+│   └── integration/          # Incident correlation
+├── reporting/                # Incident report generation
+├── monitoring/               # Prometheus metrics exporter
+├── k8s/                      # Kubernetes manifests
+├── reports/                  # Generated incident reports
+├── storage/                  # Storage components
 ├── Dockerfile
-├── docker-compose.yml
-├── README.md
-└── LICENSE
+└── README.md
 ```
 
-> The project structure will grow incrementally as each subsystem is implemented.
+## Monitoring Metrics
 
----
-
-## Current Implementation Status
-
-### Phase 1 — eBPF Development Environment
-
-* [x] WSL2 Linux environment
-* [x] Ubuntu development environment
-* [x] Clang installation
-* [x] libbpf installation
-* [x] bpftool installation
-* [x] BTF availability verified
-* [x] eBPF kernel capabilities verified
-* [x] Git repository initialized
-* [x] GitHub repository created
-
-### Phase 2 — Process Monitoring
-
-* [x] Generate `vmlinux.h`
-* [x] Create CO-RE eBPF program
-* [x] Compile eBPF object
-* [x] Generate libbpf skeleton
-* [x] Create userspace loader
-* [x] Load eBPF program into kernel
-* [x] Capture process execution events
-* [x] Read events through ring buffer
-* [x] Display process events in userspace
-
-### Upcoming Phases
-
-* [ ] Enhanced process metadata
-* [ ] System-call monitoring
-* [ ] Network event monitoring
-* [ ] File-system monitoring
-* [ ] Prometheus metrics
-* [ ] Kubernetes integration
-* [ ] Security detection engine
-* [ ] Anomaly detection
-* [ ] Event correlation
-* [ ] Root-cause analysis
-* [ ] Recommendation engine
-* [ ] Controlled auto-remediation
-* [ ] Multi-node Kubernetes deployment
-* [ ] Grafana dashboard
-* [ ] Incident replay
-* [ ] Performance benchmarking
-* [ ] Testing and documentation
-
----
-
-## Development Workflow
-
-The project follows an incremental engineering workflow:
+The Prometheus exporter exposes metrics including:
 
 ```text
-Learn
-  ↓
-Design
-  ↓
-Implement
-  ↓
-Test
-  ↓
-Measure
-  ↓
-Document
-  ↓
-Commit
-  ↓
-Push
+ebpf_exporter_up
+ebpf_events_total
+ebpf_collector_running
+ebpf_collector_errors_total
+ebpf_last_event_timestamp_seconds
+ebpf_security_alerts_total
+ebpf_behavior_alerts_total
+ebpf_anomalies_total
+ebpf_incidents_analyzed_total
+ebpf_recommendations_total
 ```
 
-Each major feature is developed, tested, documented, and committed independently.
+These metrics provide visibility into **event volume, collector health, security activity, behavioral alerts, anomalies, and incident processing**.
 
----
+## Detection
 
-## Current eBPF Process Monitor
+The platform currently supports:
 
-The first implemented component monitors the Linux `sched_process_exec` tracepoint.
+- Suspicious process detection
+- System-call activity detection framework
+- Network activity detection framework
+- Repeated process execution detection
+- Per-process event-frequency anomaly detection
+- Incident-level analysis
+
+Detection results include structured evidence such as process ID, process name, event type, severity, event count, and analysis information.
+
+## Deployment
+
+The project is designed to run in a Linux environment and has been tested using **WSL2 Ubuntu with Docker Desktop Kubernetes**.
+
+Example Kubernetes components:
 
 ```text
-Process Execution
-       ↓
-sched_process_exec
-       ↓
-eBPF Program
-       ↓
-Ring Buffer
-       ↓
-libbpf Userspace Loader
-       ↓
-Process Event
-       ↓
-Terminal
+ebpf-intelligence namespace
+├── ebpf-metrics
+├── prometheus
+└── node-exporter
 ```
 
-Example output:
+Prometheus collects metrics from the eBPF monitoring exporter, while Grafana provides visualization.
 
-```text
-eBPF process monitor started.
-Monitoring process execution events...
+## Validation
 
-Process executed | PID: 2922 | Command: ls
-Process executed | PID: 2933 | Command: date
-Process executed | PID: 2937 | Command: sed
-```
+The implementation has been validated for:
 
----
+- Real eBPF process event collection
+- Event parsing and pipeline processing
+- Security detection
+- Behavioral detection
+- Per-process anomaly detection
+- Incident analysis
+- JSON report generation
+- Prometheus metric exposure
+- Prometheus scraping
+- Grafana integration
+- Kubernetes deployment
 
-## Installation
+## Future Enhancements
 
-### Prerequisites
-
-* Linux / WSL2
-* Clang
-* LLVM
-* libbpf
-* bpftool
-* Git
-* Kernel BTF support
-* Root privileges for loading eBPF programs
-
-### Environment Setup
-
-```bash
-sudo apt update
-
-sudo apt install -y \
-    build-essential \
-    clang \
-    llvm \
-    libbpf-dev \
-    libelf-dev \
-    bpftool \
-    git \
-    curl
-```
-
-Verify:
-
-```bash
-clang --version
-bpftool version
-git --version
-```
-
-Check BTF:
-
-```bash
-ls -lh /sys/kernel/btf/vmlinux
-```
-
----
-
-## Building the Process Monitor
-
-Generate kernel type information:
-
-```bash
-sudo bpftool btf dump \
-    file /sys/kernel/btf/vmlinux \
-    format c > ebpf/vmlinux.h
-```
-
-Compile the eBPF program:
-
-```bash
-clang -O2 -g \
-    -target bpf \
-    -D__TARGET_ARCH_x86 \
-    -I./ebpf \
-    -c ebpf/process/process_monitor.bpf.c \
-    -o ebpf/process/process_monitor.bpf.o
-```
-
-Generate the libbpf skeleton:
-
-```bash
-bpftool gen skeleton \
-    ebpf/process/process_monitor.bpf.o \
-    > ebpf/process/process_monitor.skel.h
-```
-
-Compile the userspace loader:
-
-```bash
-clang -O2 -g \
-    -I./ebpf/process \
-    -I./ebpf \
-    ebpf/process/process_monitor.c \
-    -o ebpf/process/process_monitor \
-    -lbpf
-```
-
-Run:
-
-```bash
-sudo ./ebpf/process/process_monitor
-```
-
----
-
-## Security Considerations
-
-The project is designed with controlled infrastructure automation in mind.
-
-Automated remediation will:
-
-* Use explicitly defined policies
-* Restrict actions to approved operations
-* Maintain an incident/action record
-* Separate recommendation mode from automated mode
-* Avoid arbitrary command execution
-
----
-
-## Future Scope
-
-Future development may include:
-
-* Advanced Kubernetes workload correlation
-* Distributed tracing integration
-* eBPF-based network visibility
-* Service dependency graphs
-* Advanced anomaly detection
-* Automated incident classification
-* Policy-driven remediation
-* Multi-node cluster support
-* Performance benchmarking
-* Historical incident analysis
-* Infrastructure behavior profiling
-
----
-
-## Project Status
-
-**Current milestone:** Process-level eBPF observability implemented successfully.
-
-The platform is currently under active development, with additional observability, analytics, security, Kubernetes, and remediation components planned.
-
----
+- Risk/threat scoring
+- Advanced incident visualization
+- System-call and network eBPF probes
+- Container/Kubernetes workload correlation
+- Automated regression testing
+- Performance benchmarking
+- Policy-controlled remediation
+- Multi-node infrastructure intelligence
 
 ## Author
 
-**M N Monisha**
-
-Computer Science Engineering
+**M N Monisha**  
+Computer Science Engineering  
 RV Institute of Technology and Management, Bangalore
 
-GitHub: [rvitmonisha](https://github.com/rvitmonisha)
-
----
+GitHub: [rvitmonisha](https://github.com/rvitmonisha/ebpf-infrastructure-intelligence)
 
 ## License
 
-This project is intended for academic, learning, and research purposes.
+This project is licensed under the MIT License.
